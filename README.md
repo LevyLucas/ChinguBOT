@@ -1,2 +1,2 @@
 # NanaBot
-Discord bot para Munda da Nana
+Discord bot para Mundo da Nana
