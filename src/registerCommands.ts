@@ -34,6 +34,27 @@ const baseCommand = (name: string, description: string) =>
         )
     );
 
+const converterCommand = (name: string, description: string) =>
+  new SlashCommandBuilder()
+    .setName(name)
+    .setDescription(description)
+    .addStringOption((option) =>
+      option
+        .setName("direcao")
+        .setDescription("Direção da conversão")
+        .setRequired(true)
+        .addChoices(
+          { name: "₩ Won → R$ Real", value: "krw_to_brl" },
+          { name: "R$ Real → ₩ Won", value: "brl_to_krw" }
+        )
+    )
+    .addNumberOption((option) =>
+      option
+        .setName("valor")
+        .setDescription("Valor a ser convertido")
+        .setRequired(true)
+    );
+
 const pingCommand = new SlashCommandBuilder()
   .setName("ping")
   .setDescription("Verifica o tempo de resposta do bot.");
@@ -45,6 +66,8 @@ const commandsCommand = new SlashCommandBuilder()
 const commands = [
   baseCommand("resumir", "Resume as últimas mensagens enviadas no canal."),
   baseCommand("summarize", "Summarizes the last messages sent in the channel."),
+  converterCommand("converter", "Converte valores entre Wons (₩) e Reais (R$)."),
+  converterCommand("convert", "Converts values between Wons (₩) and Reais (R$)."),
   pingCommand,
   commandsCommand,
 ].map((cmd) => cmd.toJSON());
