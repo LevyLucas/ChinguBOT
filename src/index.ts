@@ -1,51 +1,65 @@
-import { Client, GatewayIntentBits, REST, Routes, SlashCommandBuilder, Interaction } from "discord.js";
+import { Client, GatewayIntentBits, Collection, Interaction } from "discord.js";
 import dotenv from "dotenv";
 dotenv.config();
-import { addMessage, getBuffer } from "./utils/messageBuffer"; // IMPORTA o buffer organizado
+import fs from "fs";
+import path from "path";
+import { addMessage } from "./utils/messageBuffer";
 
-// Setup do cliente
-const client = new Client({
+interface CustomClient extends Client {
+  commands: Collection<string, any>;
+}
+
+const client: CustomClient = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent // obrigatório pra ler mensagens!
+    GatewayIntentBits.MessageContent
   ]
-});
+}) as CustomClient;
 
-// Quando o bot entrar
+client.commands = new Collection();
+
+const commandsPath = path.join(__dirname, "commands");
+const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith(".ts") || file.endsWith(".js"));
+
+for (const file of commandFiles) {
+  const { command } = require(path.join(commandsPath, file));
+  if (command?.data && typeof command.execute === "function") {
+    const names = [command.data.name, ...(command.aliases || [])];
+    for (const name of names) {
+      client.commands.set(name, command);
+    }
+  }
+}
+
 client.once("ready", () => {
   console.log(`✅ Logado como ${client.user?.tag}`);
 });
 
-// Captura todas as mensagens e armazena por canal
-client.on("messageCreate", (message) => {
+client.on("messageCreate", message => {
   if (message.author.bot) return;
   addMessage(message.channelId, `${message.author.username}: ${message.content}`);
 });
 
-// Quando usarem /resumir
 client.on("interactionCreate", async (interaction: Interaction) => {
   if (!interaction.isChatInputCommand()) return;
-  if (interaction.commandName !== "resumir") return;
 
-  const tipo = interaction.options.getString("tipo") || "curto";
+  const command = client.commands.get(interaction.commandName);
+  if (!command) return;
 
-  const buffer = getBuffer(interaction.channelId);
-  if (!buffer || buffer.length === 0) {
-    return interaction.reply("❌ Não há mensagens recentes suficientes para resumir.");
-  }
-
-  await interaction.deferReply();
-  
   try {
-    const { summarizeMessages } = await import("./services/openai");
-    const summary = await summarizeMessages(buffer.join("\n"), tipo);
-    return interaction.editReply(`📋 **Resumo (${tipo}):**\n${summary}`);
+    await command.execute(interaction);
   } catch (error) {
-    console.error("Erro ao gerar resumo:", error);
-    return interaction.editReply("❌ Erro ao gerar o resumo. Verifique a API.");
+    console.error(`Erro ao executar o comando /${interaction.commandName}`, error);
+    const errorMsg = interaction.locale?.startsWith("pt") ?
+      "❌ Ocorreu um erro ao executar o comando." :
+      "❌ An error occurred while executing the command.";
+    if (interaction.deferred || interaction.replied) {
+      await interaction.editReply(errorMsg);
+    } else {
+      await interaction.reply({ content: errorMsg, ephemeral: true });
+    }
   }
 });
 
-// Login
 client.login(process.env.DISCORD_TOKEN);
