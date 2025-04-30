@@ -1,5 +1,6 @@
 import {
   ChatInputCommandInteraction,
+  EmbedBuilder,
   SlashCommandBuilder,
 } from "discord.js";
 import fetch from "node-fetch";
@@ -52,25 +53,17 @@ export const command = {
       clearTimeout(timeout);
 
       const data = await res.json();
-
       const converted = data.rates[to];
       if (typeof converted !== "number") {
         throw new Error("Invalid conversion response");
       }
 
-      const formatted = converted.toFixed(to === "KRW" ? 0 : 2);
-      const response = getTranslation(lang, direction, amount, formatted);
-
-      return interaction.editReply(response);
+      const embed = buildEmbed(lang, from, to, amount, converted);
+      return interaction.editReply({ embeds: [embed] });
     } catch (err: any) {
       clearTimeout(timeout);
 
-      if (err.name === "AbortError") {
-        console.error("⏰ Timeout ao acessar a API de câmbio.");
-      } else {
-        console.error("❌ Erro ao converter moeda:", err);
-      }
-
+      console.error("❌ Erro ao converter moeda:", err);
       return interaction.editReply(getErrorMessage(lang));
     }
   }
@@ -82,25 +75,52 @@ function getLang(locale: string): "pt" | "en" | "ko" {
   return "en";
 }
 
-function getTranslation(
-  lang: string,
-  direction: string,
+function buildEmbed(
+  lang: "pt" | "en" | "ko",
+  from: "BRL" | "KRW",
+  to: "BRL" | "KRW",
   amount: number,
-  result: string
-): string {
-  if (lang === "pt") {
-    return direction === "krw_to_brl"
-      ? `₩ ${amount.toLocaleString("pt-BR")} Wons equivalem a **R$ ${result}** Reais.`
-      : `R$ ${amount.toLocaleString("pt-BR")} Reais equivalem a **₩ ${result}** Wons.`;
-  }
-  if (lang === "ko") {
-    return direction === "krw_to_brl"
-      ? `₩ ${amount.toLocaleString("ko-KR")} 원은 **R$ ${result}** 브라질 헤알입니다.`
-      : `R$ ${amount.toLocaleString("ko-KR")}는 **₩ ${result}** 원입니다.`;
-  }
-  return direction === "krw_to_brl"
-    ? `₩ ${amount.toLocaleString("en-US")} Won equals **R$ ${result}** BRL.`
-    : `R$ ${amount.toLocaleString("en-US")} equals **₩ ${result}** Won.`;
+  result: number
+): EmbedBuilder {
+  const format = (v: number, currency: string) => {
+    const locales = { pt: "pt-BR", en: "en-US", ko: "ko-KR" };
+    const digits = currency === "KRW" ? 0 : 2;
+    return new Intl.NumberFormat(locales[lang], {
+      style: "currency",
+      currency,
+      minimumFractionDigits: digits,
+      maximumFractionDigits: digits,
+    }).format(v);
+  };
+
+  const formattedFrom = format(amount, from);
+  const formattedTo = format(result, to);
+
+  const directionText = {
+    pt: `${formattedFrom} equivalem a ${formattedTo}.`,
+    en: `${formattedFrom} equals ${formattedTo}.`,
+    ko: `${formattedFrom}는 ${formattedTo}입니다.`,
+  }[lang];
+
+  const title = {
+    pt: "💱 Conversão de Moeda",
+    en: "💱 Currency Conversion",
+    ko: "💱 환율 변환",
+  }[lang];
+
+  const fieldName = {
+    pt: "Resultado",
+    en: "Result",
+    ko: "결과",
+  }[lang];
+
+  return new EmbedBuilder()
+    .setTitle(title)
+    .setColor(0x2f69fb)
+    .addFields({
+      name: fieldName,
+      value: directionText,
+    });
 }
 
 function getErrorMessage(lang: string): string {
