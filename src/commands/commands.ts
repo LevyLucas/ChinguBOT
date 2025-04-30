@@ -33,6 +33,10 @@ export const command = {
           value: `> ${t.commands.convert.description}\n${t.commands.convert.aliases}`,
         },
         {
+          name: "🕒 /time",
+          value: `> ${t.commands.time.description}\n${t.commands.time.aliases}`,
+        },
+        {
           name: "📋 /commands",
           value: `> ${t.commands.commands.description}`,
         }
@@ -40,7 +44,7 @@ export const command = {
       .setFooter({ text: t.footer });
 
     await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
-  }
+  },
 };
 
 function getLang(locale: string): "pt" | "en" | "ko" {
@@ -67,6 +71,10 @@ function getTranslations(lang: "pt" | "en" | "ko") {
           description: "Converte valores entre Wons (₩) e Reais (R$).",
           aliases: "_Também pode ser usado como:_ `/converter`",
         },
+        time: {
+          description: "Mostra o horário atual na Coreia e no Brasil.",
+          aliases: "_Também pode ser usado como:_ `/horas`",
+        },
         commands: {
           description: "Exibe esta lista de comandos com descrições.",
         },
@@ -88,6 +96,10 @@ function getTranslations(lang: "pt" | "en" | "ko") {
           description: "Converts values between Wons (₩) and Reais (R$).",
           aliases: "_Also available as:_ `/converter`",
         },
+        time: {
+          description: "Shows the current time in Korea and Brazil.",
+          aliases: "_Also available as:_ `/horas`",
+        },
         commands: {
           description: "Displays this list of available commands.",
         },
@@ -108,6 +120,10 @@ function getTranslations(lang: "pt" | "en" | "ko") {
         convert: {
           description: "원(₩)과 브라질 헤알(R$) 간의 환율을 변환합니다.",
           aliases: "_/converter 명령어로도 사용할 수 있습니다_",
+        },
+        time: {
+          description: "한국과 브라질의 현재 시간을 확인합니다.",
+          aliases: "_/horas 명령어로도 사용할 수 있습니다_",
         },
         commands: {
           description: "사용 가능한 모든 명령어를 보여줍니다.",

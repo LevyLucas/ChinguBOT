@@ -14,10 +14,7 @@ const baseCommand = (name: string, description: string) =>
         .addChoices(
           { name: name === "resumir" ? "Curto" : "Short", value: "curto" },
           { name: name === "resumir" ? "Médio" : "Medium", value: "medio" },
-          {
-            name: name === "resumir" ? "Detalhado" : "Detailed",
-            value: "detalhado",
-          }
+          { name: name === "resumir" ? "Detalhado" : "Detailed", value: "detalhado" }
         )
     )
     .addStringOption((option) =>
@@ -63,11 +60,18 @@ const commandsCommand = new SlashCommandBuilder()
   .setName("commands")
   .setDescription("Lista todos os comandos disponíveis do bot.");
 
+const timeCommand = (name: string, description: string) =>
+new SlashCommandBuilder()
+  .setName(name)
+  .setDescription(description);
+
 const commands = [
   baseCommand("resumir", "Resume as últimas mensagens enviadas no canal."),
   baseCommand("summarize", "Summarizes the last messages sent in the channel."),
   converterCommand("converter", "Converte valores entre Wons (₩) e Reais (R$)."),
   converterCommand("convert", "Converts values between Wons (₩) and Reais (R$)."),
+  timeCommand("horas", "Verifica o tempo de resposta do bot."),
+  timeCommand("time", "Checks the bot's response time."),
   pingCommand,
   commandsCommand,
 ].map((cmd) => cmd.toJSON());
