@@ -22,15 +22,19 @@ export const command = {
       .addFields(
         {
           name: "🏓 /ping",
-          value: `> ${t.commands.ping.description}\n`,
+          value: `> ${t.commands.ping.description}`,
         },
         {
           name: "🧠 /summarize",
           value: `> ${t.commands.summarize.description}\n${t.commands.summarize.aliases}`,
         },
         {
+          name: "💱 /convert",
+          value: `> ${t.commands.convert.description}\n${t.commands.convert.aliases}`,
+        },
+        {
           name: "📋 /commands",
-          value: `> ${t.commands.commands.description}\n`,
+          value: `> ${t.commands.commands.description}`,
         }
       )
       .setFooter({ text: t.footer });
@@ -57,7 +61,11 @@ function getTranslations(lang: "pt" | "en" | "ko") {
         },
         summarize: {
           description: "Resume as últimas mensagens do canal.",
-          aliases: "_Também pode ser usado como:_ `/summarize`",
+          aliases: "_Também pode ser usado como:_ `/resumir`",
+        },
+        convert: {
+          description: "Converte valores entre Wons (₩) e Reais (R$).",
+          aliases: "_Também pode ser usado como:_ `/converter`",
         },
         commands: {
           description: "Exibe esta lista de comandos com descrições.",
@@ -76,6 +84,10 @@ function getTranslations(lang: "pt" | "en" | "ko") {
           description: "Summarizes the latest messages in the channel.",
           aliases: "_Also available as:_ `/resumir`",
         },
+        convert: {
+          description: "Converts values between Wons (₩) and Reais (R$).",
+          aliases: "_Also available as:_ `/converter`",
+        },
         commands: {
           description: "Displays this list of available commands.",
         },
@@ -93,11 +105,15 @@ function getTranslations(lang: "pt" | "en" | "ko") {
           description: "최근 채널 메시지를 요약합니다.",
           aliases: "_/resumir 명령어로도 사용할 수 있습니다_",
         },
+        convert: {
+          description: "원(₩)과 브라질 헤알(R$) 간의 환율을 변환합니다.",
+          aliases: "_/converter 명령어로도 사용할 수 있습니다_",
+        },
         commands: {
           description: "사용 가능한 모든 명령어를 보여줍니다.",
         },
       },
-    }
+    },
   };
 
   return translations[lang];
