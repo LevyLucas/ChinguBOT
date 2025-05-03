@@ -20,9 +20,7 @@ const baseCommand = (name: string, description: string) =>
     .addStringOption((option) =>
       option
         .setName("idioma")
-        .setDescription(
-          name === "resumir" ? "Idioma do resumo" : "Summary language"
-        )
+        .setDescription(name === "resumir" ? "Idioma do resumo" : "Summary language")
         .setRequired(false)
         .addChoices(
           { name: "Português (Brasil)", value: "pt" },
@@ -42,7 +40,11 @@ const converterCommand = (name: string, description: string) =>
         .setRequired(true)
         .addChoices(
           { name: "₩ Won → R$ Real", value: "krw_to_brl" },
-          { name: "R$ Real → ₩ Won", value: "brl_to_krw" }
+          { name: "₩ Won → $ Dólar", value: "krw_to_usd" },
+          { name: "R$ Real → ₩ Won", value: "brl_to_krw" },
+          { name: "R$ Real → $ Dólar", value: "brl_to_usd" },
+          { name: "$ Dólar → ₩ Won", value: "usd_to_krw" },
+          { name: "$ Dólar → R$ Real", value: "usd_to_brl" }
         )
     )
     .addNumberOption((option) =>
@@ -52,6 +54,11 @@ const converterCommand = (name: string, description: string) =>
         .setRequired(true)
     );
 
+const timeCommand = (name: string, description: string) =>
+  new SlashCommandBuilder()
+    .setName(name)
+    .setDescription(description);
+
 const pingCommand = new SlashCommandBuilder()
   .setName("ping")
   .setDescription("Verifica o tempo de resposta do bot.");
@@ -60,18 +67,13 @@ const commandsCommand = new SlashCommandBuilder()
   .setName("commands")
   .setDescription("Lista todos os comandos disponíveis do bot.");
 
-const timeCommand = (name: string, description: string) =>
-new SlashCommandBuilder()
-  .setName(name)
-  .setDescription(description);
-
 const commands = [
   baseCommand("resumir", "Resume as últimas mensagens enviadas no canal."),
   baseCommand("summarize", "Summarizes the last messages sent in the channel."),
-  converterCommand("converter", "Converte valores entre Wons (₩) e Reais (R$)."),
-  converterCommand("convert", "Converts values between Wons (₩) and Reais (R$)."),
-  timeCommand("horas", "Verifica o tempo de resposta do bot."),
-  timeCommand("time", "Checks the bot's response time."),
+  converterCommand("converter", "Converte valores entre Wons (₩), Reais (R$) e Dólares ($)."),
+  converterCommand("convert", "Converts values between Wons (₩), Reais (R$) and Dollars ($)."),
+  timeCommand("horas", "Mostra o horário atual na Coreia do Sul e no Brasil."),
+  timeCommand("time", "Shows the current time in Korea and Brazil."),
   pingCommand,
   commandsCommand,
 ].map((cmd) => cmd.toJSON());

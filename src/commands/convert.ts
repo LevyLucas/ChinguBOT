@@ -8,7 +8,7 @@ import fetch from "node-fetch";
 export const command = {
   data: new SlashCommandBuilder()
     .setName("convert")
-    .setDescription("Converte valores entre Wons (₩) e Reais (R$).")
+    .setDescription("Converte valores entre Wons (₩), Reais (R$) e Dólares ($).")
     .addStringOption(option =>
       option
         .setName("direcao")
@@ -16,7 +16,11 @@ export const command = {
         .setRequired(true)
         .addChoices(
           { name: "₩ Won → R$ Real", value: "krw_to_brl" },
-          { name: "R$ Real → ₩ Won", value: "brl_to_krw" }
+          { name: "₩ Won → $ Dólar", value: "krw_to_usd" },
+          { name: "R$ Real → ₩ Won", value: "brl_to_krw" },
+          { name: "R$ Real → $ Dólar", value: "brl_to_usd" },
+          { name: "$ Dólar → ₩ Won", value: "usd_to_krw" },
+          { name: "$ Dólar → R$ Real", value: "usd_to_brl" }
         )
     )
     .addNumberOption(option =>
@@ -34,8 +38,7 @@ export const command = {
 
     await interaction.deferReply();
 
-    const from = direction === "krw_to_brl" ? "KRW" : "BRL";
-    const to = direction === "krw_to_brl" ? "BRL" : "KRW";
+    const [from, _, to] = direction.toUpperCase().split("_") as ["KRW" | "BRL" | "USD", string, "KRW" | "BRL" | "USD"];
 
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 3000);
@@ -77,8 +80,8 @@ function getLang(locale: string): "pt" | "en" | "ko" {
 
 function buildEmbed(
   lang: "pt" | "en" | "ko",
-  from: "BRL" | "KRW",
-  to: "BRL" | "KRW",
+  from: "BRL" | "KRW" | "USD",
+  to: "BRL" | "KRW" | "USD",
   amount: number,
   result: number
 ): EmbedBuilder {
