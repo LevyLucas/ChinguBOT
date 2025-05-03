@@ -85,15 +85,21 @@ function buildEmbed(
   amount: number,
   result: number
 ): EmbedBuilder {
-  const format = (v: number, currency: string) => {
-    const locales = { pt: "pt-BR", en: "en-US", ko: "ko-KR" };
+  const locales = { pt: "pt-BR", en: "en-US", ko: "ko-KR" };
+  const currencyLabels: Record<"BRL" | "KRW" | "USD", string> = {
+    BRL: "(BRL)",
+    KRW: "(KRW)",
+    USD: "(USD)",
+  };
+
+  const format = (v: number, currency: "BRL" | "KRW" | "USD") => {
     const digits = currency === "KRW" ? 0 : 2;
     return new Intl.NumberFormat(locales[lang], {
       style: "currency",
       currency,
       minimumFractionDigits: digits,
       maximumFractionDigits: digits,
-    }).format(v);
+    }).format(v) + ` ${currencyLabels[currency]}`;
   };
 
   const formattedFrom = format(amount, from);
