@@ -68,7 +68,7 @@ function getTranslations(lang: "pt" | "en" | "ko") {
           aliases: "_Também pode ser usado como:_ `/resumir`",
         },
         convert: {
-          description: "Converte valores entre Wons (₩) e Reais (R$).",
+          description: "Converte valores entre Wons (₩), Reais (R$) e Dólares ($).",
           aliases: "_Também pode ser usado como:_ `/converter`",
         },
         time: {
@@ -93,7 +93,7 @@ function getTranslations(lang: "pt" | "en" | "ko") {
           aliases: "_Also available as:_ `/resumir`",
         },
         convert: {
-          description: "Converts values between Wons (₩) and Reais (R$).",
+          description: "Converts between Wons (₩), Reais (R$), and Dollars ($).",
           aliases: "_Also available as:_ `/converter`",
         },
         time: {
@@ -118,7 +118,7 @@ function getTranslations(lang: "pt" | "en" | "ko") {
           aliases: "_/resumir 명령어로도 사용할 수 있습니다_",
         },
         convert: {
-          description: "원(₩)과 브라질 헤알(R$) 간의 환율을 변환합니다.",
+          description: "원(₩), 헤알(R$), 달러($) 간의 환율을 변환합니다.",
           aliases: "_/converter 명령어로도 사용할 수 있습니다_",
         },
         time: {
