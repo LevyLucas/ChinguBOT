@@ -10,3 +10,7 @@ export function addMessage(channelId: string, message: string) {
 export function getBuffer(channelId: string): string[] | undefined {
   return messageBuffers.get(channelId);
 }
+
+export function clearBuffer(channelId: string) {
+  messageBuffers.set(channelId, []);
+}

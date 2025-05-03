@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
-import { getBuffer } from "../utils/messageBuffer";
+import { getBuffer, clearBuffer } from "../utils/messageBuffer";
 import { summarizeMessages } from "../services/openai";
 
 export const command = {
@@ -41,6 +41,7 @@ export const command = {
   
     try {
       const summary = await summarizeMessages(buffer.join("\n"), tipo, idioma);
+      clearBuffer(interaction.channelId);
       return interaction.editReply(`${getLocalizedText(idioma, "summary", tipo)}\n${summary}`);
     } catch (error) {
       console.error("Erro ao gerar resumo:", error);
