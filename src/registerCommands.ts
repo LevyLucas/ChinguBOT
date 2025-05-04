@@ -2,7 +2,7 @@ import { REST, Routes, SlashCommandBuilder } from "discord.js";
 import dotenv from "dotenv";
 dotenv.config();
 
-const baseCommand = (name: string, description: string) =>
+const summarizeCommand = (name: string, description: string) =>
   new SlashCommandBuilder()
     .setName(name)
     .setDescription(description)
@@ -63,16 +63,15 @@ const pingCommand = new SlashCommandBuilder()
   .setName("ping")
   .setDescription("Verifica o tempo de resposta do bot.");
 
-const commandsCommand = new SlashCommandBuilder()
-  .setName("commands")
-  .setDescription("Lista todos os comandos disponíveis do bot.");
+const commandsCommand = (name: string, description: string) =>
+  new SlashCommandBuilder().setName(name).setDescription(description);
 
 const weatherCommand = (name: string, description: string) =>
   new SlashCommandBuilder().setName(name).setDescription(description);
 
 const commands = [
-  baseCommand("resumir", "Resume as últimas mensagens enviadas no canal."),
-  baseCommand("summarize", "Summarizes the last messages sent in the channel."),
+  summarizeCommand("resumir", "Resume as últimas mensagens enviadas no canal."),
+  summarizeCommand("summarize", "Summarizes the last messages sent in the channel."),
   converterCommand("converter", "Converte valores entre Wons (₩), Reais (R$) e Dólares ($)."),
   converterCommand("convert", "Converts values between Wons (₩), Reais (R$) and Dollars ($)."),
   timeCommand("horas", "Mostra o horário atual na Coreia do Sul e no Brasil."),
@@ -80,7 +79,8 @@ const commands = [
   weatherCommand("clima", "Mostra o clima atual na Coreia do Sul e no Brasil."),
   weatherCommand("weather", "Shows current weather in South Korea and Brazil."),
   pingCommand,
-  commandsCommand,
+  commandsCommand("comandos", "Lista todos os comandos disponíveis do bot."),
+  commandsCommand("commands", "Lists all available bot commands."),
 ].map((cmd) => cmd.toJSON());
 
 const rest = new REST().setToken(process.env.DISCORD_TOKEN!);

@@ -9,7 +9,7 @@ export const command = {
   data: new SlashCommandBuilder()
     .setName("commands")
     .setDescription("Lista todos os comandos disponíveis do bot."),
-  aliases: [],
+  aliases: ["comandos"],
 
   async execute(interaction: ChatInputCommandInteraction) {
     const lang = getLang(interaction.locale);
@@ -37,8 +37,12 @@ export const command = {
           value: `> ${t.commands.time.description}\n${t.commands.time.aliases}`,
         },
         {
+          name: "🌦️ /weather",
+          value: `> ${t.commands.weather.description}\n${t.commands.weather.aliases}`,
+        },
+        {
           name: "📋 /commands",
-          value: `> ${t.commands.commands.description}`,
+          value: `> ${t.commands.commands.description}\n${t.commands.commands.aliases}`,
         }
       )
       .setFooter({ text: t.footer });
@@ -75,8 +79,13 @@ function getTranslations(lang: "pt" | "en" | "ko") {
           description: "Mostra o horário atual na Coreia e no Brasil.",
           aliases: "_Também pode ser usado como:_ `/horas`",
         },
+        weather: {
+          description: "Mostra a previsão do tempo para cidades na Coreia e no Brasil.",
+          aliases: "_Também pode ser usado como:_ `/clima`",
+        },
         commands: {
           description: "Exibe esta lista de comandos com descrições.",
+          aliases: "_Também pode ser usado como:_ `/comandos`",
         },
       },
     },
@@ -100,8 +109,13 @@ function getTranslations(lang: "pt" | "en" | "ko") {
           description: "Shows the current time in Korea and Brazil.",
           aliases: "_Also available as:_ `/horas`",
         },
+        weather: {
+          description: "Shows the weather forecast for cities in Korea and Brazil.",
+          aliases: "_Also available as:_ `/clima`",
+        },
         commands: {
-          description: "Displays this list of available commands.",
+          description: "Displays this list of available commands with descriptions.",
+          aliases: "_Also available as:_ `/comandos`",
         },
       },
     },
@@ -125,8 +139,13 @@ function getTranslations(lang: "pt" | "en" | "ko") {
           description: "한국과 브라질의 현재 시간을 확인합니다.",
           aliases: "_/horas 명령어로도 사용할 수 있습니다_",
         },
+        weather: {
+          description: "한국과 브라질 주요 도시의 날씨를 확인합니다.",
+          aliases: "_/clima 명령어로도 사용할 수 있습니다_",
+        },
         commands: {
-          description: "사용 가능한 모든 명령어를 보여줍니다.",
+          description: "사용 가능한 모든 명령어와 설명을 보여줍니다.",
+          aliases: "_/comandos 명령어로도 사용할 수 있습니다_",
         },
       },
     },
