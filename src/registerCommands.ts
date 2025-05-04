@@ -67,6 +67,9 @@ const commandsCommand = new SlashCommandBuilder()
   .setName("commands")
   .setDescription("Lista todos os comandos disponíveis do bot.");
 
+const weatherCommand = (name: string, description: string) =>
+  new SlashCommandBuilder().setName(name).setDescription(description);
+
 const commands = [
   baseCommand("resumir", "Resume as últimas mensagens enviadas no canal."),
   baseCommand("summarize", "Summarizes the last messages sent in the channel."),
@@ -74,6 +77,8 @@ const commands = [
   converterCommand("convert", "Converts values between Wons (₩), Reais (R$) and Dollars ($)."),
   timeCommand("horas", "Mostra o horário atual na Coreia do Sul e no Brasil."),
   timeCommand("time", "Shows the current time in Korea and Brazil."),
+  weatherCommand("clima", "Mostra o clima atual na Coreia do Sul e no Brasil."),
+  weatherCommand("weather", "Shows current weather in South Korea and Brazil."),
   pingCommand,
   commandsCommand,
 ].map((cmd) => cmd.toJSON());
