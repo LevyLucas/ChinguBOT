@@ -1,9 +1,10 @@
 import {
   ChatInputCommandInteraction,
   EmbedBuilder,
-  SlashCommandBuilder
+  SlashCommandBuilder,
 } from "discord.js";
 import axios from "axios";
+import { Agent } from "https";
 
 type Language = "pt" | "en" | "ko";
 
@@ -15,13 +16,13 @@ interface LocationGroup {
 const langMap: Record<Language, string> = {
   pt: "pt-BR",
   en: "en-US",
-  ko: "ko-KR"
+  ko: "ko-KR",
 };
 
 const weatherLabels: Record<Language, string> = {
   pt: "Previsão do Tempo",
   en: "Weather Forecast",
-  ko: "날씨 예보"
+  ko: "날씨 예보",
 };
 
 const locationGroups: Record<Language, LocationGroup[]> = {
@@ -31,17 +32,17 @@ const locationGroups: Record<Language, LocationGroup[]> = {
       cities: [
         { city: "Seoul", label: "Seul" },
         { city: "Suwon", label: "Suwon" },
-        { city: "Incheon", label: "Incheon" }
-      ]
+        { city: "Incheon", label: "Incheon" },
+      ],
     },
     {
       region: "🇧🇷 Brasil",
       cities: [
         { city: "Curitiba", label: "Curitiba" },
         { city: "Sao Paulo", label: "São Paulo" },
-        { city: "Rio de Janeiro", label: "Rio de Janeiro" }
-      ]
-    }
+        { city: "Rio de Janeiro", label: "Rio de Janeiro" },
+      ],
+    },
   ],
   en: [
     {
@@ -49,17 +50,17 @@ const locationGroups: Record<Language, LocationGroup[]> = {
       cities: [
         { city: "Seoul", label: "Seoul" },
         { city: "Suwon", label: "Suwon" },
-        { city: "Incheon", label: "Incheon" }
-      ]
+        { city: "Incheon", label: "Incheon" },
+      ],
     },
     {
       region: "🇧🇷 Brazil",
       cities: [
         { city: "Curitiba", label: "Curitiba" },
         { city: "Sao Paulo", label: "São Paulo" },
-        { city: "Rio de Janeiro", label: "Rio de Janeiro" }
-      ]
-    }
+        { city: "Rio de Janeiro", label: "Rio de Janeiro" },
+      ],
+    },
   ],
   ko: [
     {
@@ -67,18 +68,18 @@ const locationGroups: Record<Language, LocationGroup[]> = {
       cities: [
         { city: "Seoul", label: "서울" },
         { city: "Suwon", label: "수원" },
-        { city: "Incheon", label: "인천" }
-      ]
+        { city: "Incheon", label: "인천" },
+      ],
     },
     {
       region: "🇧🇷 브라질",
       cities: [
         { city: "Curitiba", label: "쿠리치바" },
         { city: "Sao Paulo", label: "상파울루" },
-        { city: "Rio de Janeiro", label: "리우데자네이루" }
-      ]
-    }
-  ]
+        { city: "Rio de Janeiro", label: "리우데자네이루" },
+      ],
+    },
+  ],
 };
 
 function getLang(locale: string): Language {
@@ -106,7 +107,7 @@ function getWeatherEmoji(icon: string): string {
     "13d": "❄️",
     "13n": "❄️",
     "50d": "🌫️",
-    "50n": "🌫️"
+    "50n": "🌫️",
   };
   return map[icon] || "☁️";
 }
@@ -118,17 +119,21 @@ export const command = {
   aliases: ["clima"],
 
   async execute(interaction: ChatInputCommandInteraction) {
+    const agent = new Agent({ family: 4 });
     const lang = getLang(interaction.locale);
     const userLocale = langMap[lang];
     await interaction.deferReply();
 
     try {
       const groups = locationGroups[lang];
-      const allCities = groups.flatMap(g => g.cities);
+      const allCities = groups.flatMap((g) => g.cities);
 
       const results = await Promise.all(
         allCities.map(({ city }) =>
-          axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${process.env.WEATHER_API_KEY}&units=metric&lang=${lang}`)
+          axios.get(
+            `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${process.env.WEATHER_API_KEY}&units=metric&lang=${lang}`,
+            { httpsAgent: agent, timeout: 5000 }
+          )
         )
       );
 
@@ -149,7 +154,7 @@ export const command = {
           embed.addFields({
             name: `${group.region} - ${label}`,
             value: `🌡️ ${temp} °C\n${emoji} ${weather}`,
-            inline: true
+            inline: true,
           });
         }
       }
@@ -160,9 +165,9 @@ export const command = {
       const fallback = {
         pt: "❌ Não foi possível obter o clima.",
         en: "❌ Unable to fetch weather info.",
-        ko: "❌ 날씨 정보를 가져올 수 없어요."
+        ko: "❌ 날씨 정보를 가져올 수 없어요.",
       };
       await interaction.editReply(fallback[lang]);
     }
-  }
+  },
 };
