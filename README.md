@@ -8,7 +8,7 @@ Ele oferece comandos úteis e personalizados que facilitam a interação e a org
 
 - `/ping` — Verifica o tempo de resposta do bot.
 - `/summarize` — Resume as últimas mensagens do canal (com suporte a idiomas e níveis de detalhe).
-- `/convert` — Converte valores entre **₩ Wons** e **R$ Reais**.
+- `/convert` — Converte valores entre **₩ Wons**, **R$ Reais** e **$ Dollar**.
 - `/time` — Mostra o horário atual na **Coreia do Sul** e no **Brasil**, com comparação.
 - `/weather` — Mostra o clima atual na **Coreia do Sul** e no **Brasil**.
 - `/commands` — Exibe uma lista completa dos comandos disponíveis.
