@@ -7,7 +7,7 @@ import puppeteer from "puppeteer";
 dotenv.config();
 
 const INSTAGRAM_URL = "https://www.instagram.com/nana.oii/";
-const CHECK_INTERVAL = 5 * 60 * 1000;
+const CHECK_INTERVAL = 15 * 60 * 1000;
 const CHANNEL_ID = process.env.INSTAGRAM_CHANNEL_ID!;
 const LAST_POST_FILE = path.join(__dirname, "lastPost.json");
 
@@ -71,8 +71,10 @@ async function checkInstagram(client: Client) {
 
   const cleanedUrl = cleanInstagramUrl(latest);
 
-  await (channel as TextChannel).send("📢 @everyone **@nana.oii** fez uma nova instagram!");
-  await (channel as TextChannel).send(cleanedUrl);
+  await (channel as TextChannel).send(
+    `📢 @everyone **@nana.oii** fez uma nova instagram!\n
+     ${cleanedUrl}`
+  );
 
   console.log("✅ Notificação enviada com sucesso!");
   saveLastPost(latest);
