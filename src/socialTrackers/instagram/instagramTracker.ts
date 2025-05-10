@@ -50,7 +50,7 @@ async function fetchLatestInstagramPost(): Promise<string | null> {
 
     return candidate ?? null;
   } catch (error) {
-    console.error("Erro ao usar Puppeteer no Instagram:", error);
+    console.warn("⚠️ Instagram temporariamente inacessível, tentando novamente mais tarde.");
     return null;
   } finally {
     await browser.close();
