@@ -72,8 +72,7 @@ async function checkInstagram(client: Client) {
   const cleanedUrl = cleanInstagramUrl(latest);
 
   await (channel as TextChannel).send(
-    `📢 @everyone **@nana.oii** fez uma nova instagram!\n
-     ${cleanedUrl}`
+    `📢 @everyone **@nana.oii** fez uma nova instagram!\n${cleanedUrl}`
   );
 
   console.log("✅ Notificação enviada com sucesso!");
