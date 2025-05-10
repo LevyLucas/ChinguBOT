@@ -5,6 +5,7 @@ import fs from "fs";
 import path from "path";
 import { addMessage } from "./utils/messageBuffer";
 import { startInstagramTracker } from "./socialTrackers/instagram/instagramTracker";
+import { startTwitchTracker } from "./socialTrackers/twitch/twitchTracker";
 
 interface CustomClient extends Client {
   commands: Collection<string, any>;
@@ -36,6 +37,7 @@ for (const file of commandFiles) {
 client.once("ready", () => {
   console.log(`✅ Logado como ${client.user?.tag}`);
   startInstagramTracker(client);
+  startTwitchTracker(client);
 });
 
 client.on("messageCreate", message => {
