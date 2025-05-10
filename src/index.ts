@@ -4,6 +4,7 @@ dotenv.config();
 import fs from "fs";
 import path from "path";
 import { addMessage } from "./utils/messageBuffer";
+import { startInstagramTracker } from "./socialTrackers/instagram/instagramTracker";
 
 interface CustomClient extends Client {
   commands: Collection<string, any>;
@@ -34,6 +35,7 @@ for (const file of commandFiles) {
 
 client.once("ready", () => {
   console.log(`✅ Logado como ${client.user?.tag}`);
+  startInstagramTracker(client);
 });
 
 client.on("messageCreate", message => {
