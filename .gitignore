@@ -1,3 +1,5 @@
 /node_modules
 .env
 lastPost.json
+lastYoutubeVideo.json
+lastLive.json

@@ -6,6 +6,7 @@ import path from "path";
 import { addMessage } from "./utils/messageBuffer";
 import { startInstagramTracker } from "./socialTrackers/instagram/instagramTracker";
 import { startTwitchTracker } from "./socialTrackers/twitch/twitchTracker";
+import { startYoutubeTracker } from "./socialTrackers/youtube/youtubeTracker";
 
 interface CustomClient extends Client {
   commands: Collection<string, any>;
@@ -38,6 +39,7 @@ client.once("ready", () => {
   console.log(`✅ Logado como ${client.user?.tag}`);
   startInstagramTracker(client);
   startTwitchTracker(client);
+  startYoutubeTracker(client);
 });
 
 client.on("messageCreate", message => {
