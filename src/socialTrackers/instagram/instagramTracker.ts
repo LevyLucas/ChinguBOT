@@ -1,12 +1,13 @@
-import { Client, TextChannel, EmbedBuilder } from "discord.js";
+import { Client, TextChannel } from "discord.js";
 import fs from "fs";
 import path from "path";
 import dotenv from "dotenv";
-import puppeteer from "puppeteer";
+import axios from "axios";
 
 dotenv.config();
 
-const INSTAGRAM_URL = "https://www.instagram.com/nana.oii/";
+const INSTAGRAM_USERNAME = process.env.INSTAGRAM_USERNAME!;
+const INSTAGRAM_URL = `https://i.instagram.com/api/v1/users/web_profile_info/?username=${INSTAGRAM_USERNAME}`;
 const CHECK_INTERVAL = 15 * 60 * 1000;
 const CHANNEL_ID = process.env.INSTAGRAM_CHANNEL_ID!;
 const LAST_POST_FILE = path.join(__dirname, "lastPost.json");
@@ -30,36 +31,26 @@ function saveLastPost(url: string) {
 }
 
 async function fetchLatestInstagramPost(): Promise<string | null> {
-  const browser = await puppeteer.launch({ headless: true });
-  const page = await browser.newPage();
-
   try {
-    await page.goto(INSTAGRAM_URL, {
-      waitUntil: "networkidle2",
-      timeout: 30000,
+    const { data } = await axios.get(INSTAGRAM_URL, {
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 Instagram 155.0.0.37.107",
+        "X-IG-App-ID": "936619743392459",
+      },
     });
 
-    await page.waitForSelector("article a", { timeout: 10000 });
+    const edges = data?.data?.user?.edge_owner_to_timeline_media?.edges;
+    if (!edges || edges.length < 4) return null;
 
-    const postUrls = await page.$$eval("article a", (elements) => {
-      return elements.map((el) => (el as HTMLAnchorElement).href);
-    });
+    const shortcode = edges[3].node.shortcode;
+    const url = `https://www.instagram.com/p/${shortcode}/`;
 
-    const unique = [...new Set(postUrls)];
-    const candidate = unique[3] || unique[0];
-
-    return candidate ?? null;
-  } catch (error) {
-    console.warn("⚠️ Instagram temporariamente inacessível, tentando novamente mais tarde.");
+    return url;
+  } catch (error: any) {
+    console.error("❌ Erro ao buscar post via API:", error.message || error);
     return null;
-  } finally {
-    await browser.close();
   }
-}
-
-function cleanInstagramUrl(url: string): string {
-  const match = url.match(/(\/(reel|p)\/[\w-]+\/)/);
-  return match ? `https://www.instagram.com${match[1]}` : url;
 }
 
 async function checkInstagram(client: Client) {
@@ -69,13 +60,11 @@ async function checkInstagram(client: Client) {
   const channel = client.channels.cache.get(CHANNEL_ID);
   if (!channel || !channel.isTextBased()) return;
 
-  const cleanedUrl = cleanInstagramUrl(latest);
-
   await (channel as TextChannel).send(
-    `📢 @everyone **@nana.oii** fez uma nova postagem no instagram!\n${cleanedUrl}`
+    `📢 @everyone **@${INSTAGRAM_USERNAME}** fez uma nova postagem no Instagram!\n${latest}`
   );
 
-  console.log("✅ Notificação de instagram enviada com sucesso!");
+  console.log("✅ Notificação de Instagram enviada com sucesso!");
   saveLastPost(latest);
 }
 
