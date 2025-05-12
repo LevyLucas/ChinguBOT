@@ -52,6 +52,7 @@ async function isLive(): Promise<{
   live: boolean;
   url?: string;
   streamData?: any;
+  profileImage?: string;
 }> {
   const token = await getAccessToken();
 
@@ -65,7 +66,10 @@ async function isLive(): Promise<{
     },
   });
 
-  const userId = userRes.data.data[0]?.id;
+  const user = userRes.data.data[0];
+  const userId = user?.id;
+  const profileImage = user?.profile_image_url;
+
   if (!userId) return { live: false };
 
   const streamRes = await axios.get("https://api.twitch.tv/helix/streams", {
@@ -84,7 +88,8 @@ async function isLive(): Promise<{
   return {
     live: isOnline,
     url: `https://www.twitch.tv/${TWITCH_USERNAME}`,
-    streamData: streamData,
+    streamData,
+    profileImage,
   };
 }
 
@@ -102,6 +107,7 @@ export async function startTwitchTracker(client: Client) {
 
         const streamData = status.streamData!;
         const streamTitle = streamData.title;
+        const profileImage = status.profileImage;
         const gameName = streamData.game_name || "Desconhecido";
         const viewerCount = streamData.viewer_count?.toString() || "N/A";
 
@@ -117,6 +123,7 @@ export async function startTwitchTracker(client: Client) {
             "Clique no botão abaixo para assistir a live agora mesmo."
           )
           .setColor(0x9146ff)
+          .setThumbnail(profileImage ?? null)
           .addFields(
             { name: "Category", value: gameName, inline: true },
             { name: "Viewers", value: viewerCount, inline: true }
@@ -133,7 +140,7 @@ export async function startTwitchTracker(client: Client) {
         const row = new ActionRowBuilder<ButtonBuilder>().addComponents(button);
 
         await (channel as TextChannel).send({
-          content: `🔴 @everyone A **${TWITCH_USERNAME}** está AO VIVO na Twitch!`,
+          content: `📢 @everyone **${TWITCH_USERNAME}** está AO VIVO na Twitch!`,
           embeds: [embed],
           components: [row],
         });
