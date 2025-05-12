@@ -6,6 +6,7 @@ import path from "path";
 import { addMessage } from "./utils/messageBuffer";
 import { startTwitchTracker } from "./socialTrackers/twitch/twitchTracker";
 import { startYoutubeTracker } from "./socialTrackers/youtube/youtubeTracker";
+import { startInstagramTracker } from "./socialTrackers/instagram/instagramTracker";
 
 interface CustomClient extends Client {
   commands: Collection<string, any>;
@@ -66,6 +67,7 @@ client.once("ready", () => {
   }, 5000);
   startTwitchTracker(client);
   startYoutubeTracker(client);
+  startInstagramTracker(client);
 });
 
 client.on("messageCreate", (message) => {
