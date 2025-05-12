@@ -1,4 +1,11 @@
-import { Client, TextChannel } from "discord.js";
+import {
+  Client,
+  TextChannel,
+  EmbedBuilder,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+} from "discord.js";
 import fs from "fs";
 import path from "path";
 import dotenv from "dotenv";
@@ -29,7 +36,11 @@ function saveLastVideo(id: string) {
   lastVideoId = id;
 }
 
-async function fetchLatestYoutubeVideo(): Promise<{ id: string; title: string; url: string } | null> {
+async function fetchLatestYoutubeVideo(): Promise<{
+  id: string;
+  title: string;
+  url: string;
+} | null> {
   try {
     const { data } = await axios.get(YOUTUBE_FEED_URL);
     const parser = new XMLParser();
@@ -41,7 +52,9 @@ async function fetchLatestYoutubeVideo(): Promise<{ id: string; title: string; u
     return {
       id: latest["yt:videoId"],
       title: latest.title,
-      url: latest.link?.["@_href"] || `https://www.youtube.com/watch?v=${latest["yt:videoId"]}`,
+      url:
+        latest.link?.["@_href"] ||
+        `https://www.youtube.com/watch?v=${latest["yt:videoId"]}`,
     };
   } catch (err) {
     console.error("Erro ao buscar feed do YouTube:", err);
@@ -60,14 +73,31 @@ export async function startYoutubeTracker(client: Client) {
     const channel = client.channels.cache.get(CHANNEL_ID);
     if (!channel || !channel.isTextBased()) return;
 
-    await (channel as TextChannel).send(
-      `🆕 @everyone Novo vídeo no canal **Cortes da Nana**: **${video.title}**\n${video.url}`
-    );
+    const embed = new EmbedBuilder()
+      .setAuthor({ name: "🆕 Novo vídeo no canal: Cortes da Nana" })
+      .setTitle(video.title)
+      .setURL(video.url)
+      .setColor(0xff0000)
+      .setImage(`https://img.youtube.com/vi/${video.id}/maxresdefault.jpg`)
+      .setTimestamp();
+
+    const button = new ButtonBuilder()
+      .setLabel("▶️ Assistir agora")
+      .setStyle(ButtonStyle.Link)
+      .setURL(video.url);
+
+    const row = new ActionRowBuilder<ButtonBuilder>().addComponents(button);
+
+    await (channel as TextChannel).send({
+      content: "📢 @everyone Gente, saiu um corte novo!",
+      embeds: [embed],
+      components: [row],
+    });
 
     console.log("✅ Notificação de vídeo enviada.");
     saveLastVideo(video.id);
   };
 
   await check();
-  setInterval(check, 10 * 60 * 1000); // Verifica a cada 10 minutos
+  setInterval(check, 10 * 60 * 1000);
 }
