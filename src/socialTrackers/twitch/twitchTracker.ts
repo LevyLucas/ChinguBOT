@@ -1,4 +1,11 @@
-import { Client, TextChannel } from "discord.js";
+import {
+  Client,
+  TextChannel,
+  EmbedBuilder,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+} from "discord.js";
 import fs from "fs";
 import path from "path";
 import dotenv from "dotenv";
@@ -29,33 +36,33 @@ function loadLastLive(): boolean {
 async function getAccessToken(): Promise<string> {
   if (accessToken) return accessToken;
 
-  const { data } = await axios.post(
-    `https://id.twitch.tv/oauth2/token`,
-    null,
-    {
-      params: {
-        client_id: process.env.TWITCH_CLIENT_ID,
-        client_secret: process.env.TWITCH_CLIENT_SECRET,
-        grant_type: "client_credentials"
-      }
-    }
-  );
+  const { data } = await axios.post(`https://id.twitch.tv/oauth2/token`, null, {
+    params: {
+      client_id: process.env.TWITCH_CLIENT_ID,
+      client_secret: process.env.TWITCH_CLIENT_SECRET,
+      grant_type: "client_credentials",
+    },
+  });
 
   accessToken = data.access_token;
   return accessToken!;
 }
 
-async function isLive(): Promise<{ live: boolean; url?: string }> {
+async function isLive(): Promise<{
+  live: boolean;
+  url?: string;
+  streamData?: any;
+}> {
   const token = await getAccessToken();
 
   const userRes = await axios.get("https://api.twitch.tv/helix/users", {
     headers: {
       "Client-ID": process.env.TWITCH_CLIENT_ID!,
-      Authorization: `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
     },
     params: {
-      login: TWITCH_USERNAME
-    }
+      login: TWITCH_USERNAME,
+    },
   });
 
   const userId = userRes.data.data[0]?.id;
@@ -64,17 +71,21 @@ async function isLive(): Promise<{ live: boolean; url?: string }> {
   const streamRes = await axios.get("https://api.twitch.tv/helix/streams", {
     headers: {
       "Client-ID": process.env.TWITCH_CLIENT_ID!,
-      Authorization: `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
     },
     params: {
-      user_id: userId
-    }
+      user_id: userId,
+    },
   });
 
   const isOnline = streamRes.data.data.length > 0;
-  const url = `https://www.twitch.tv/${TWITCH_USERNAME}`;
+  const streamData = streamRes.data.data[0];
 
-  return { live: isOnline, url };
+  return {
+    live: isOnline,
+    url: `https://www.twitch.tv/${TWITCH_USERNAME}`,
+    streamData: streamData,
+  };
 }
 
 export async function startTwitchTracker(client: Client) {
@@ -89,9 +100,43 @@ export async function startTwitchTracker(client: Client) {
         const channel = client.channels.cache.get(TWITCH_CHANNEL_ID);
         if (!channel || !channel.isTextBased()) return;
 
-        await (channel as TextChannel).send(
-          `🔴 @everyone A **${TWITCH_USERNAME}** está AO VIVO na Twitch! 👉 ${status.url}`
-        );
+        const streamData = status.streamData!;
+        const streamTitle = streamData.title;
+        const gameName = streamData.game_name || "Desconhecido";
+        const viewerCount = streamData.viewer_count?.toString() || "N/A";
+
+        const thumbnailUrl =
+          streamData.thumbnail_url
+            .replace("{width}", "440")
+            .replace("{height}", "248") + `?rand=${Date.now()}`;
+
+        const embed = new EmbedBuilder()
+          .setAuthor({ name: `🔴 ${TWITCH_USERNAME} is now live on Twitch!` })
+          .setTitle(`${streamTitle}`)
+          .setDescription(
+            "Clique no botão abaixo para assistir a live agora mesmo."
+          )
+          .setColor(0x9146ff)
+          .addFields(
+            { name: "Category", value: gameName, inline: true },
+            { name: "Viewers", value: viewerCount, inline: true }
+          )
+          .setImage(thumbnailUrl)
+          .setURL(status.url!)
+          .setTimestamp();
+
+        const button = new ButtonBuilder()
+          .setLabel("Watch Stream")
+          .setStyle(ButtonStyle.Link)
+          .setURL(status.url!);
+
+        const row = new ActionRowBuilder<ButtonBuilder>().addComponents(button);
+
+        await (channel as TextChannel).send({
+          content: `🔴 @everyone A **${TWITCH_USERNAME}** está AO VIVO na Twitch!`,
+          embeds: [embed],
+          components: [row],
+        });
 
         console.log("✅ Notificação de live enviada.");
         saveLastLive(true);
