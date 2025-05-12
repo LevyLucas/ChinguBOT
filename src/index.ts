@@ -39,13 +39,13 @@ for (const file of commandFiles) {
 client.once("ready", () => {
   console.log(`✅ Logado como ${client.user?.tag}`);
   const statusMessages = [
-    "💬 /social to see Nana's social medias",
     "🌐 Useful commands for the community",
     "📺 Notifying lives and videos",
     "🤖 Helping the Community 💓",
     "💡 Type /commands to see all commands",
     "🌟 Type /summarize to summarize content",
     "💱 Type /convert to convert currencies",
+    "💬 Type /social to see Nana's social medias",
     "🕒 Type /time to check the time in Korea",
     "🌦️ Type /weather to check the weather",
   ];
