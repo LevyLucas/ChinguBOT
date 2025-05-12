@@ -16,7 +16,7 @@ export const command = {
 
     const embed = new EmbedBuilder()
       .setTitle(t.title)
-      .setColor(0x2f69fb)
+      .setColor(0xef6f82)
       .setDescription(t.description)
       .addFields(
         {

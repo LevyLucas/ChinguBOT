@@ -39,7 +39,7 @@ export const command = {
 
     const embed = new EmbedBuilder()
       .setTitle(getTitle(lang))
-      .setColor(0x2f69fb)
+      .setColor(0xef6f82)
       .addFields(
         { name: `🇰🇷 ${labels.kr}`, value: `🕒 ${timeKR}`, inline: true },
         { name: `🇧🇷 ${labels.br}`, value: `🕒 ${timeBR}`, inline: true },

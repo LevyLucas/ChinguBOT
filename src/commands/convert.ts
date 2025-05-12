@@ -125,7 +125,7 @@ function buildEmbed(
 
   return new EmbedBuilder()
     .setTitle(title)
-    .setColor(0x2f69fb)
+    .setColor(0xef6f82)
     .addFields({
       name: fieldName,
       value: directionText,

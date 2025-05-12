@@ -139,7 +139,7 @@ export const command = {
 
       const embed = new EmbedBuilder()
         .setTitle(weatherLabels[lang])
-        .setColor(0x2f69fb)
+        .setColor(0xef6f82)
         .setTimestamp();
 
       let i = 0;
