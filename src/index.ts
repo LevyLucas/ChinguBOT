@@ -15,14 +15,16 @@ const client: CustomClient = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent
-  ]
+    GatewayIntentBits.MessageContent,
+  ],
 }) as CustomClient;
 
 client.commands = new Collection();
 
 const commandsPath = path.join(__dirname, "commands");
-const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith(".ts") || file.endsWith(".js"));
+const commandFiles = fs
+  .readdirSync(commandsPath)
+  .filter((file) => file.endsWith(".ts") || file.endsWith(".js"));
 
 for (const file of commandFiles) {
   const { command } = require(path.join(commandsPath, file));
@@ -36,13 +38,42 @@ for (const file of commandFiles) {
 
 client.once("ready", () => {
   console.log(`✅ Logado como ${client.user?.tag}`);
+  const statusMessages = [
+    "💬 /social to see Nana's social medias",
+    "🌐 Useful commands for the community",
+    "📺 Notifying lives and videos",
+    "🤖 Helping the Community 💓",
+    "💡 Type /commands to see all commands",
+    "🌟 Type /summarize to summarize content",
+    "💱 Type /convert to convert currencies",
+    "🕒 Type /time to check the time in Korea",
+    "🌦️ Type /weather to check the weather",
+  ];
+
+  let index = 0;
+  setInterval(() => {
+    client.user?.setPresence({
+      status: "online",
+      activities: [
+        {
+          name: "🌸 ChinguBOT ativo!",
+          type: 4,
+          state: statusMessages[index],
+        },
+      ],
+    });
+    index = (index + 1) % statusMessages.length;
+  }, 5000);
   startTwitchTracker(client);
   startYoutubeTracker(client);
 });
 
-client.on("messageCreate", message => {
+client.on("messageCreate", (message) => {
   if (message.author.bot) return;
-  addMessage(message.channelId, `${message.author.username}: ${message.content}`);
+  addMessage(
+    message.channelId,
+    `${message.author.username}: ${message.content}`
+  );
 });
 
 client.on("interactionCreate", async (interaction: Interaction) => {
@@ -54,10 +85,13 @@ client.on("interactionCreate", async (interaction: Interaction) => {
   try {
     await command.execute(interaction);
   } catch (error) {
-    console.error(`Erro ao executar o comando /${interaction.commandName}`, error);
-    const errorMsg = interaction.locale?.startsWith("pt") ?
-      "❌ Ocorreu um erro ao executar o comando." :
-      "❌ An error occurred while executing the command.";
+    console.error(
+      `Erro ao executar o comando /${interaction.commandName}`,
+      error
+    );
+    const errorMsg = interaction.locale?.startsWith("pt")
+      ? "❌ Ocorreu um erro ao executar o comando."
+      : "❌ An error occurred while executing the command.";
     if (interaction.deferred || interaction.replied) {
       await interaction.editReply(errorMsg);
     } else {

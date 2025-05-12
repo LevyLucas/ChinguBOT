@@ -55,21 +55,18 @@ const converterCommand = (name: string, description: string) =>
     );
 
 const timeCommand = (name: string, description: string) =>
-  new SlashCommandBuilder()
-    .setName(name)
-    .setDescription(description);
-
-const pingCommand = new SlashCommandBuilder()
-  .setName("ping")
-  .setDescription("Verifica o tempo de resposta do bot.");
-
-const commandsCommand = (name: string, description: string) =>
   new SlashCommandBuilder().setName(name).setDescription(description);
 
 const weatherCommand = (name: string, description: string) =>
   new SlashCommandBuilder().setName(name).setDescription(description);
 
+const commandsCommand = (name: string, description: string) =>
+  new SlashCommandBuilder().setName(name).setDescription(description);
+
 const socialCommand = (name: string, description: string) =>
+  new SlashCommandBuilder().setName(name).setDescription(description);
+
+const pingCommand = (name: string, description: string) =>
   new SlashCommandBuilder().setName(name).setDescription(description);
 
 const commands = [
@@ -81,7 +78,7 @@ const commands = [
   timeCommand("time", "Shows the current time in Korea and Brazil."),
   weatherCommand("clima", "Mostra o clima atual na Coreia do Sul e no Brasil."),
   weatherCommand("weather", "Shows current weather in South Korea and Brazil."),
-  pingCommand,
+  pingCommand("ping", "Check the bot's response time."),
   commandsCommand("comandos", "Lista todos os comandos disponíveis do bot."),
   commandsCommand("commands", "Lists all available bot commands."),
   socialCommand("social", "Send the influencer's social media links."),
@@ -92,11 +89,18 @@ const rest = new REST().setToken(process.env.DISCORD_TOKEN!);
 
 (async () => {
   try {
-    console.log("🔧 Registrando comandos...");
-    await rest.put(Routes.applicationCommands(process.env.CLIENT_ID!), {
-      body: commands,
-    });
-    console.log("✅ Comandos registrados com sucesso.");
+    console.log("🔧 Registrando comandos globais...");
+    const data = await rest.put(
+      Routes.applicationCommands(process.env.CLIENT_ID!),
+      { body: commands }
+    );
+
+    console.log(`✅ ${Array.isArray(data) ? data.length : 0} comandos registrados com sucesso.`);
+    if (Array.isArray(data)) {
+      for (const cmd of data) {
+        console.log(`→ /${cmd.name}`);
+      }
+    }
   } catch (error) {
     console.error("❌ Falha ao registrar comandos:", error);
   }
