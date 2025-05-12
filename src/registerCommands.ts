@@ -69,6 +69,9 @@ const commandsCommand = (name: string, description: string) =>
 const weatherCommand = (name: string, description: string) =>
   new SlashCommandBuilder().setName(name).setDescription(description);
 
+const socialCommand = (name: string, description: string) =>
+  new SlashCommandBuilder().setName(name).setDescription(description);
+
 const commands = [
   summarizeCommand("resumir", "Resume as últimas mensagens enviadas no canal."),
   summarizeCommand("summarize", "Summarizes the last messages sent in the channel."),
@@ -81,6 +84,8 @@ const commands = [
   pingCommand,
   commandsCommand("comandos", "Lista todos os comandos disponíveis do bot."),
   commandsCommand("commands", "Lists all available bot commands."),
+  socialCommand("social", "Send the influencer's social media links."),
+  socialCommand("redes", "Envia os links das redes sociais da influencer."),
 ].map((cmd) => cmd.toJSON());
 
 const rest = new REST().setToken(process.env.DISCORD_TOKEN!);
