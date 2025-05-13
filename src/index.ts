@@ -67,7 +67,7 @@ client.once("ready", () => {
   }, 5000);
   startTwitchTracker(client);
   startYoutubeTracker(client);
-  startInstagramTracker(client);
+  // startInstagramTracker(client);
 });
 
 client.on("messageCreate", (message) => {

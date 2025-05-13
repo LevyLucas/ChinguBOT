@@ -38,12 +38,10 @@ export async function fetchLatestInstagramPost(username: string) {
     const postData = await page.evaluate(() => {
       const metaImage = document.querySelector('meta[property="og:image"]')?.getAttribute("content");
 
-      // Busca a legenda da postagem no <h1> dentro do primeiro <li> da ul
       const ul = document.querySelector("article ul");
       const firstLi = ul?.querySelector("li");
       const h1 = firstLi?.querySelector("h1");
 
-      // Converte <br> em \n
       let caption = "";
       if (h1) {
         const clone = h1.cloneNode(true) as HTMLElement;

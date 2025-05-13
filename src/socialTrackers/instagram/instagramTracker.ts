@@ -56,10 +56,10 @@ export async function startInstagramTracker(client: Client) {
         .setAuthor({
           name: "nana.oii",
         })
-        .setTitle("🆕 Nova postagem no Instagram!")
+        .setTitle(`${textOnly}`)
         .setURL(latest.link)
         .setDescription(
-          `${textOnly} \n${hashtags ? `\n${hashtags}` : ""}`
+          `${hashtags ? `${hashtags}` : ""}`
         )
         .setColor(0xe1306c)
         .setImage(latest.imageUrl || null)
