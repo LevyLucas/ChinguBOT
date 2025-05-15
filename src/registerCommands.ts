@@ -58,7 +58,15 @@ const timeCommand = (name: string, description: string) =>
   new SlashCommandBuilder().setName(name).setDescription(description);
 
 const weatherCommand = (name: string, description: string) =>
-  new SlashCommandBuilder().setName(name).setDescription(description);
+  new SlashCommandBuilder()
+    .setName(name)
+    .setDescription(description)
+    .addStringOption((option) =>
+    option
+      .setName("city")
+      .setDescription("Enter a city name to check its weather")
+      .setRequired(false)
+  );
 
 const commandsCommand = (name: string, description: string) =>
   new SlashCommandBuilder().setName(name).setDescription(description);

@@ -122,9 +122,37 @@ export const command = {
     const agent = new Agent({ family: 4 });
     const lang = getLang(interaction.locale);
     const userLocale = langMap[lang];
+    const cityArg = interaction.options.getString("city");
+
     await interaction.deferReply();
 
     try {
+      if (cityArg) {
+        const res = await axios.get(
+          `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(
+            cityArg
+          )}&appid=${process.env.WEATHER_API_KEY}&units=metric&lang=${lang}`,
+          { httpsAgent: agent, timeout: 5000 }
+        );
+
+        const temp = Math.round(res.data.main.temp);
+        const weather = res.data.weather[0].description;
+        const icon = res.data.weather[0].icon;
+        const emoji = getWeatherEmoji(icon);
+
+        const embed = new EmbedBuilder()
+          .setTitle(`${weatherLabels[lang]} - ${cityArg}`)
+          .setColor(0xef6f82)
+          .addFields({
+            name: cityArg,
+            value: `🌡️ ${temp} °C\n${emoji} ${weather}`,
+          })
+          .setTimestamp();
+
+        await interaction.editReply({ embeds: [embed] });
+        return;
+      }
+
       const groups = locationGroups[lang];
       const allCities = groups.flatMap((g) => g.cities);
 
