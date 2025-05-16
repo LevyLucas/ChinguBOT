@@ -71,13 +71,42 @@ export const command = {
       .setColor(0xef6f82)
       .addFields(
         { name: `🇰🇷 ${labels.kr}`, value: `🕒 ${timeKR}`, inline: true },
-        { name: `🌍 ${localLabel}`, value: `🕒 ${timeLocal}`, inline: true },
+        { name: `${getFlagEmoji(localInput)} ${localLabel}`, value: `🕒 ${timeLocal}`, inline: true },
         { name: "🧭 " + labels.diff, value: timeDiffText }
       );
 
     return interaction.reply({ embeds: [embed] });
   },
 };
+
+function getFlagEmoji(input?: string | null): string {
+  if (!input) return "🇧🇷";
+
+  const normalized = input.toLowerCase().trim();
+
+  const flagMap: Record<string, string> = {
+    "manaus": "🇧🇷",
+    "sao paulo": "🇧🇷",
+    "brasilia": "🇧🇷",
+    "lisboa": "🇵🇹",
+    "new york": "🇺🇸",
+    "los angeles": "🇺🇸",
+    "london": "🇬🇧",
+    "tokyo": "🇯🇵",
+    "seoul": "🇰🇷",
+    "coreia": "🇰🇷",
+    "ho chi minh": "🇻🇳",
+    "vietnam": "🇻🇳",
+    "paris": "🇫🇷",
+    "mexico": "🇲🇽",
+    "berlim": "🇩🇪",
+    "roma": "🇮🇹",
+    "buenos aires": "🇦🇷",
+    "montevideo": "🇺🇾",
+  };
+
+  return flagMap[normalized] ?? "🌍";
+}
 
 function getLang(locale: string): "pt" | "en" | "ko" {
   if (locale.startsWith("pt")) return "pt";
