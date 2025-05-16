@@ -115,13 +115,20 @@ function getWeatherEmoji(icon: string): string {
 export const command = {
   data: new SlashCommandBuilder()
     .setName("weather")
-    .setDescription("Check weather in Korea and Brazil"),
+    .setDescription(
+      "Check weather in Korea and Brazil or search a specific city"
+    )
+    .addStringOption((option) =>
+      option
+        .setName("city")
+        .setDescription("Type a city name (optional)")
+        .setRequired(false)
+    ),
   aliases: ["clima"],
 
   async execute(interaction: ChatInputCommandInteraction) {
     const agent = new Agent({ family: 4 });
     const lang = getLang(interaction.locale);
-    const userLocale = langMap[lang];
     const cityArg = interaction.options.getString("city");
 
     await interaction.deferReply();
@@ -154,7 +161,21 @@ export const command = {
       }
 
       const groups = locationGroups[lang];
-      const allCities = groups.flatMap((g) => g.cities);
+      const filteredGroups = groups.map((group) => {
+        if (
+          group.region.includes("Coreia") ||
+          group.region.includes("South Korea") ||
+          group.region.includes("대한민국")
+        ) {
+          return {
+            ...group,
+            cities: group.cities.filter((c) => c.city === "Seoul"),
+          };
+        }
+        return group;
+      });
+
+      const allCities = filteredGroups.flatMap((g) => g.cities);
 
       const results = await Promise.all(
         allCities.map(({ city }) =>
@@ -170,16 +191,17 @@ export const command = {
         .setColor(0xef6f82)
         .setTimestamp();
 
+      const fields = [];
       let i = 0;
-      for (const group of groups) {
-        for (const { city, label } of group.cities) {
+      for (const group of filteredGroups) {
+        for (const { label } of group.cities) {
           const res = results[i++];
           const temp = Math.round(res.data.main.temp);
           const weather = res.data.weather[0].description;
           const icon = res.data.weather[0].icon;
           const emoji = getWeatherEmoji(icon);
 
-          embed.addFields({
+          fields.push({
             name: `${group.region} - ${label}`,
             value: `🌡️ ${temp} °C\n${emoji} ${weather}`,
             inline: true,
@@ -187,6 +209,23 @@ export const command = {
         }
       }
 
+      while (fields.length < 4) {
+        fields.push({ name: "\u200B", value: "\u200B", inline: true });
+      }
+
+      embed.addFields(
+        fields[0],
+        {
+          name: '\u200B',
+          value: '\u200B',
+          inline: true,
+        },
+        fields[1],
+      );
+      embed.addFields(
+        fields[2],
+        fields[3],
+      );
       await interaction.editReply({ embeds: [embed] });
     } catch (error) {
       console.error("Erro ao obter clima:", error);
