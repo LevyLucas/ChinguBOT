@@ -44,6 +44,7 @@ O ChinguBOT detecta automaticamente o idioma preferido do usuário com base no D
 - [Discord.js](https://discord.js.org/)
 - [Axios](https://axios-http.com/)
 - [OpenWeatherMap API](https://openweathermap.org/api)
+- [Frankfurter API](https://www.frankfurter.app/)
 - [OpenRouter AI](https://openrouter.ai/)
 
 ---
