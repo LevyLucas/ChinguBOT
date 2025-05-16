@@ -20,10 +20,10 @@ Ele oferece comandos úteis e personalizados que facilitam a interação e a org
 
 ## 📺 Recursos de Rastreamento
 
-- **YouTube Tracker** — Notifica automaticamente no servidor quando um novo vídeo for publicado no canal da Nana.
-- **Twitch Tracker** — Envia uma notificação quando a Nana entrar ao vivo na Twitch.
+- **YouTube Tracker** — Notifica no servidor quando um novo vídeo for publicado no canal de Cortes da Nana.
+- **Twitch Tracker** — Envia uma notificação quando a Nana entra ao vivo na Twitch.
 
-Essas notificações são exibidas com mensagens personalizadas e embeds automáticos nos canais configurados.
+Essas notificações são exibidas com mensagens personalizadas e **embeds automáticos** nos canais configurados.
 
 ---
 
@@ -44,6 +44,7 @@ O ChinguBOT detecta automaticamente o idioma preferido do usuário com base no D
 - [Discord.js](https://discord.js.org/)
 - [Axios](https://axios-http.com/)
 - [OpenWeatherMap API](https://openweathermap.org/api)
+- [OpenRouter AI](https://openrouter.ai/)
 
 ---
 
@@ -52,4 +53,3 @@ O ChinguBOT detecta automaticamente o idioma preferido do usuário com base no D
 Este projeto é mantido com carinho para aproximar a comunidade da streamer **Nana (nanacoreaninha)**, oferecendo informações úteis em tempo real e uma experiência amigável no servidor. 💕
 
 ---
-
