@@ -29,11 +29,7 @@ const locationGroups: Record<Language, LocationGroup[]> = {
   pt: [
     {
       region: "🇰🇷 Coreia do Sul",
-      cities: [
-        { city: "Seoul", label: "Seul" },
-        { city: "Suwon", label: "Suwon" },
-        { city: "Incheon", label: "Incheon" },
-      ],
+      cities: [{ city: "Seoul", label: "Seul" }],
     },
     {
       region: "🇧🇷 Brasil",
@@ -47,11 +43,7 @@ const locationGroups: Record<Language, LocationGroup[]> = {
   en: [
     {
       region: "🇰🇷 South Korea",
-      cities: [
-        { city: "Seoul", label: "Seoul" },
-        { city: "Suwon", label: "Suwon" },
-        { city: "Incheon", label: "Incheon" },
-      ],
+      cities: [{ city: "Seoul", label: "Seoul" }],
     },
     {
       region: "🇧🇷 Brazil",
@@ -65,11 +57,7 @@ const locationGroups: Record<Language, LocationGroup[]> = {
   ko: [
     {
       region: "🇰🇷 대한민국",
-      cities: [
-        { city: "Seoul", label: "서울" },
-        { city: "Suwon", label: "수원" },
-        { city: "Incheon", label: "인천" },
-      ],
+      cities: [{ city: "Seoul", label: "서울" }],
     },
     {
       region: "🇧🇷 브라질",
@@ -112,6 +100,14 @@ function getWeatherEmoji(icon: string): string {
   return map[icon] || "☁️";
 }
 
+function getFlagEmoji(countryCode: string): string {
+  return countryCode
+    .toUpperCase()
+    .replace(/./g, (char) =>
+      String.fromCodePoint(127397 + char.charCodeAt(0))
+    );
+}
+
 export const command = {
   data: new SlashCommandBuilder()
     .setName("weather")
@@ -147,11 +143,15 @@ export const command = {
         const icon = res.data.weather[0].icon;
         const emoji = getWeatherEmoji(icon);
 
+        const countryCode = res.data.sys.country;
+        const flag = getFlagEmoji(countryCode);
+        const displayName = `${flag} ${res.data.name}`;
+
         const embed = new EmbedBuilder()
-          .setTitle(`${weatherLabels[lang]} - ${cityArg}`)
+          .setTitle(`${weatherLabels[lang]} - ${displayName}`)
           .setColor(0xef6f82)
           .addFields({
-            name: cityArg,
+            name: displayName,
             value: `🌡️ ${temp} °C\n${emoji} ${weather}`,
           })
           .setTimestamp();
@@ -215,17 +215,12 @@ export const command = {
 
       embed.addFields(
         fields[0],
-        {
-          name: '\u200B',
-          value: '\u200B',
-          inline: true,
-        },
+        { name: "\u200B", value: "\u200B", inline: true },
         fields[1],
-      );
-      embed.addFields(
         fields[2],
-        fields[3],
+        fields[3]
       );
+
       await interaction.editReply({ embeds: [embed] });
     } catch (error) {
       console.error("Erro ao obter clima:", error);
