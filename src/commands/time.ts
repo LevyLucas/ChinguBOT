@@ -103,6 +103,8 @@ function getFlagEmoji(input?: string | null): string {
     "roma": "🇮🇹",
     "buenos aires": "🇦🇷",
     "montevideo": "🇺🇾",
+    "sydney": "🇦🇺",
+    "australia": "🇦🇺",
   };
 
   return flagMap[normalized] ?? "🌍";
@@ -180,21 +182,23 @@ function getTimeZoneFromInput(input?: string): string {
     "manaus": "America/Manaus",
     "sao paulo": "America/Sao_Paulo",
     "brasilia": "America/Sao_Paulo",
-    "lisboa": "Europe/Lisbon",
     "new york": "America/New_York",
     "los angeles": "America/Los_Angeles",
-    "london": "Europe/London",
+    "mexico": "America/Mexico_City",
+    "buenos aires": "America/Argentina/Buenos_Aires",
+    "montevideo": "America/Montevideo",
+    "sydney": "Australia/Sydney",
+    "australia": "Australia/Sydney",
     "tokyo": "Asia/Tokyo",
     "seoul": "Asia/Seoul",
     "coreia": "Asia/Seoul",
     "ho chi minh": "Asia/Ho_Chi_Minh",
     "vietnam": "Asia/Ho_Chi_Minh",
+    "lisboa": "Europe/Lisbon",
+    "london": "Europe/London",
     "paris": "Europe/Paris",
-    "mexico": "America/Mexico_City",
     "berlim": "Europe/Berlin",
     "roma": "Europe/Rome",
-    "buenos aires": "America/Argentina/Buenos_Aires",
-    "montevideo": "America/Montevideo",
   };
 
   return map[normalized] ?? "Invalid/Zone";
