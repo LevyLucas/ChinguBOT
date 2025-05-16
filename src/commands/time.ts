@@ -63,7 +63,7 @@ export const command = {
     const timeLocal = localTime.toLocaleString(langMap[lang], options);
 
     const diffHours = (koreaTime.getTime() - localTime.getTime()) / 3600000;
-    const timeDiffText = getTimeDiffText(lang, diffHours);
+    const timeDiffText = getTimeDiffText(lang, diffHours, localLabel);
     const labels = getFieldLabels(lang);
 
     const embed = new EmbedBuilder()
@@ -150,25 +150,25 @@ function getFieldLabels(lang: "pt" | "en" | "ko") {
   return labels[lang];
 }
 
-function getTimeDiffText(lang: "pt" | "en" | "ko", diff: number): string {
+function getTimeDiffText(lang: "pt" | "en" | "ko", diff: number, locationName: string): string {
   const formatted = Math.abs(diff).toFixed(0);
   const isAhead = diff > 0;
 
   if (lang === "pt") {
     return isAhead
-      ? `A Coreia está **${formatted} horas à frente** do local informado.`
-      : `O local informado está **${formatted} horas à frente** da Coreia.`;
+      ? `A Coreia está **${formatted} horas à frente** de ${locationName}.`
+      : `${locationName} está **${formatted} horas à frente** da Coreia.`;
   }
 
   if (lang === "ko") {
     return isAhead
-      ? `한국은 해당 위치보다 **${formatted}시간 빠릅니다.**`
-      : `해당 위치는 한국보다 **${formatted}시간 빠릅니다.**`;
+      ? `한국은 ${locationName}보다 **${formatted}시간 빠릅니다.**`
+      : `${locationName}는 한국보다 **${formatted}시간 빠릅니다.**`;
   }
 
   return isAhead
-    ? `Korea is **${formatted} hours ahead** of the provided location.`
-    : `The provided location is **${formatted} hours ahead** of Korea.`;
+    ? `Korea is **${formatted} hours ahead** of ${locationName}.`
+    : `${locationName} is **${formatted} hours ahead** of Korea.`;
 }
 
 function getTimeZoneFromInput(input?: string): string {
